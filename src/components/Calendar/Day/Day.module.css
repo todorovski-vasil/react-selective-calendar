@@ -1,0 +1,28 @@
+.DayTile {
+    text-align: center;
+    line-height: 3rem;
+    height: 3rem;
+    width: 2rem;
+    background-color: gray;
+    color: black;
+}
+
+.DaySelector {
+    text-align: center;
+    vertical-align: center;
+    line-height: 1.5rem;
+    margin-top: 0.75rem;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: inline-block;
+    color: black;
+}
+
+.DaySelected {    
+    background-color: lightgray;
+}
+
+.DayForbidden {
+    color: lightgray;
+}
