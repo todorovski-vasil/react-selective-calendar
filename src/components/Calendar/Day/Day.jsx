@@ -17,7 +17,7 @@ class Day extends PureComponent {
         }
 
         return (
-            <div className={dayStyleClasses}>
+            <div className={dayStyleClasses} onClick={this.props.onClick}>
                 <div className={daySelectorClasses}>
                     {this.props.day}
                 </div>
