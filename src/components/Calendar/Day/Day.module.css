@@ -1,18 +1,17 @@
 .DayTile {
-    text-align: center;
-    line-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 3rem;
     width: 2rem;
-    background-color: gray;
+    background-color: lightgray;
     color: black;
 }
 
 .DaySelector {
     text-align: center;
-    vertical-align: center;
-    line-height: 1.5rem;
-    margin-top: 0.75rem;
     border-radius: 50%;
+    line-height: 1.5rem;
     width: 1.5rem;
     height: 1.5rem;
     display: inline-block;
@@ -20,9 +19,13 @@
 }
 
 .DaySelected {    
-    background-color: lightgray;
+    background-color: darkgray;
 }
 
 .DayForbidden {
-    color: lightgray;
+    color: gray;
+}
+
+.OtherMonth {
+    background-color: white;
 }

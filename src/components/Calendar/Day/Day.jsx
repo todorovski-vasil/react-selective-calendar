@@ -11,8 +11,13 @@ class Day extends PureComponent {
             daySelectorClasses += " " + styles.DaySelected;
         }
 
+        let dayStyleClasses = styles.DayTile;
+        if(!this.props.currentMonth) {
+            dayStyleClasses += " " + styles.OtherMonth;
+        }
+
         return (
-            <div className={styles.DayTile}>
+            <div className={dayStyleClasses}>
                 <div className={daySelectorClasses}>
                     {this.props.day}
                 </div>
