@@ -3,36 +3,57 @@ import styles from './Calendar.module.css';
 import Day from "./Day/Day";
 
 class Calendar extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
-        let date = new Date();
-        let day = date.getDate();
-        let month = date.getMonth();
-        let dayOfWeek = (date.getDay() + 6) % 7;
-        let removeDays = day + (dayOfWeek - (day % 7));
-        date.setDate(date.getDate() - removeDays);
+        this.state = {};
+    }
 
-        let days = [];
+    static getDerivedStateFromProps(props, state) {
+        let days = Calendar.getVisibleDays(props.data.startDate, props.data.availableDates);
+    
+        if(state.days) {
+            days = days.map(day => {
+                let foundDay = state.days.find(d => day.key === d.key);
+                if(foundDay) {
+                    day.selected = foundDay.selected;
+                }
+                return day;
+            });
+        }
+
+        return { days: days };
+    }
+
+    static getVisibleDays = (workingDate, availableDates) => {
+        const date = new Date(workingDate.year + "-" + workingDate.month + "-" + workingDate.day)
+        const month = date.getMonth();
+        date.setDate(date.getDate() - (date.getDate() - 1));
+        date.setDate(date.getDate() - (date.getDay() - 1));
+        
+        const days = [];
         for(let i=42; i!==0; i--) {
+            const available = typeof availableDates === "undefined" || availableDates.some(avDate => {
+                return (avDate.day === date.getDate() && 
+                    avDate.month === (date.getMonth() + 1) &&
+                    avDate.year === date.getUTCFullYear());
+            });
+
             days.push({
                 key: date.getTime(),
                 day: date.getDate(),
-                forbidden: (Math.random() * 3 > 2),
-                selected: (Math.random() * 10 > 5),
+                forbidden: !available,
+                selected: false,
                 currentMonth: date.getMonth() === month
             });
             date.setDate(date.getDate() + 1);
         }
-
-        this.state = {
-            days: days
-        };
+        return days;
     }
 
     render() {
         return (
-            <div className={styles.Calendar} onClick={e => alert("click Calendar")}>
+            <div className={styles.Calendar}>
                 {this.state.days.map(day => <Day
                     key={day.key}
                     day={day.day} 
@@ -49,14 +70,16 @@ class Calendar extends Component {
     }
 
     toggleSelect = key => {
-        let days = [...this.state.days];
-        let clickedDay = days.find(day => day.key === key);
+        const days = this.state.days.map(day => {
+            if(day.key === key) {
+                if(!day.forbidden && day.currentMonth) {
+                    day.selected = !day.selected;
+                }
+            }
+            return day;
+        });
 
-        if(!clickedDay.forbidden) {
-            clickedDay.selected = !clickedDay.selected;
-        }
-
-        this.setState({ days });
+        this.setState({ days: days });
     }
 }
 
