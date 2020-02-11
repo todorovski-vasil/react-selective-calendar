@@ -6,23 +6,34 @@ class Calendar extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            selectedDays: []
+        };
     }
 
     static getDerivedStateFromProps(props, state) {
-        let days = Calendar.getVisibleDays(props.data.startDate, props.data.availableDates);
-    
-        if(state.days) {
-            days = days.map(day => {
-                let foundDay = state.days.find(d => day.key === d.key);
-                if(foundDay) {
-                    day.selected = foundDay.selected;
-                }
-                return day;
-            });
+        let workingDate = null;
+        if(state.month && state.year) { // if already mounted
+            workingDate = {
+                year: state.year,
+                month: state.month,
+                day: 15
+            };
+        } else {    // on init
+            workingDate = props.data.startDate;
         }
+        let newState = Calendar.getVisibleDays(workingDate, props.data.availableDates);
+    
+        newState.days = newState.days.map(day => {
+            if(state.selectedDays.find(key => key === day.key)) {
+                day.selected = true;
+            } else {
+                day.selected = false;
+            }
+            return day;
+        });        
 
-        return { days: days };
+        return newState;
     }
 
     static getVisibleDays = (workingDate, availableDates) => {
@@ -48,38 +59,82 @@ class Calendar extends Component {
             });
             date.setDate(date.getDate() + 1);
         }
-        return days;
+        return { 
+            days: days,
+            year: workingDate.year,
+            month: workingDate.month
+        };
     }
 
     render() {
         return (
-            <div className={styles.Calendar}>
-                {this.state.days.map(day => <Day
-                    key={day.key}
-                    day={day.day} 
-                    forbidden={day.forbidden} 
-                    selected={day.selected}
-                    currentMonth={day.currentMonth}
-                    onClick={event => {
-                        event.stopPropagation();
-                        this.toggleSelect(day.key);
-                    }}
-                />)}
-            </div>
+            <React.Fragment>
+                <div>
+                    <button onClick={this.monthDown}>&lt;</button>
+                    {this.state.month + " - " + this.state.year}
+                    <button onClick={this.monthUp}>&gt;</button>
+                </div>
+                <div className={styles.Calendar}>
+                    {this.state.days.map(day => <Day
+                        key={day.key}
+                        day={day.day} 
+                        forbidden={day.forbidden} 
+                        selected={day.selected}
+                        currentMonth={day.currentMonth}
+                        onClick={event => {
+                            event.stopPropagation();
+                            this.toggleSelect(day.key);
+                        }}
+                    />)}
+                </div>
+            </React.Fragment>
         );
     }
 
-    toggleSelect = key => {
-        const days = this.state.days.map(day => {
-            if(day.key === key) {
-                if(!day.forbidden && day.currentMonth) {
-                    day.selected = !day.selected;
-                }
-            }
-            return day;
-        });
+    monthUp = event => {
+        const newState = {...this.state};
+        newState.days = [...this.state.days];
+        newState.selectedDays = [...this.state.selectedDays];
 
-        this.setState({ days: days });
+        if(newState.month === 12) {
+            newState.month = 1;
+            newState.year++;
+        } else {
+            newState.month++;
+        }
+        this.setState(newState);
+    }
+
+    monthDown = event => {
+        const newState = {...this.state};
+        newState.days = [...this.state.days];
+        newState.selectedDays = [...this.state.selectedDays];
+
+        if(newState.month === 1) {
+            newState.month = 12;
+            newState.year--;
+        } else {
+            newState.month--;
+        }
+        this.setState(newState);
+    }
+
+    toggleSelect = key => {
+        if(this.state.days.find(day => day.key === key && !day.forbidden && day.currentMonth)) {
+            const newState = {...this.state};
+            newState.days = [...this.state.days];
+            newState.selectedDays = [...this.state.selectedDays];
+
+            const indexSel = newState.selectedDays.findIndex(selKey => selKey === key);
+
+            if(indexSel !== -1) {
+                newState.selectedDays.splice(indexSel, 1);
+            } else {
+                newState.selectedDays.push(key);
+            }
+
+            this.setState(newState);
+        }
     }
 }
 
