@@ -40,7 +40,9 @@ class Calendar extends Component {
         const date = new Date(workingDate.year + "-" + workingDate.month + "-" + workingDate.day)
         const month = date.getMonth();
         date.setDate(date.getDate() - (date.getDate() - 1));
-        date.setDate(date.getDate() - (date.getDay() - 1));
+        let dow = date.getDay();
+        dow = dow ? dow : 7;
+        date.setDate(date.getDate() - (dow  - 1));
         
         const days = [];
         for(let i=42; i!==0; i--) {

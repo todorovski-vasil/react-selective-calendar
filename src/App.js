@@ -8,7 +8,7 @@ function App() {
   const calData = {
     availableDates: [
       { year: 2020, month: 1, day: 10},
-      { year: 2020, month: 2, day: 11},
+      { year: 2020, month: 2, day: 1},
       { year: 2020, month: 2, day: 13},
       { year: 2020, month: 2, day: 15},
       { year: 2020, month: 2, day: 16},
